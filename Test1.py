@@ -1,7 +1,7 @@
 from pulp import *
 
 #init class
-LpProblem('max pouvoir calorifique', LpMaximize)
+model = LpProblem('max pouvoir calorifique', LpMaximize)
 
 #define variables
 A=LpVariable('Gas A',lowBound=0,cat='Continuous')
@@ -14,8 +14,9 @@ model += 1000*A + 2000*B + 1500*C
 #define contraints
 model += 6 * A + 2 * B + 4 * C <= 10
 model += 10 * A + 25 * B + 15 * C <= 50
-
+ 
 #solve model
 model.solve()
 print("Produce {} Gas A".format(A.varValue))
-print("Produce {} Gas A".format(B.varValue))
+print("Produce {} Gas B".format(B.varValue))
+print("Produce {} Gas C".format(C.varValue))
