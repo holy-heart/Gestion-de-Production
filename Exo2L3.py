@@ -27,7 +27,6 @@ y = LpVariable.dicts("Usine", [(i,j) for i in PDV for j in Usine], 0)
 prob += lpSum(Cout[j][i] * y[(i,j)] for i in PDV for j in Usine),"Cout totale"
 
 #define contraint
-prob.constraints.clear()
 for j in Usine :
     prob += lpSum(y[(i,j)] for i in PDV ) <= PA[j], f"Contrainte_Production_annuelle_{j}"
 
