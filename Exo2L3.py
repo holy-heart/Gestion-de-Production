@@ -1,7 +1,8 @@
 from pulp import LpProblem, LpVariable, lpSum, LpMinimize
-
+#define variable
 PDV=['A','B','C','D']
 Usine=['1','2','3']
+#define atributs
 Cout={ '1': {'A':5,'B':6,'C':6,'D':8},
        '2': {'A':11,'B':9,'C':4,'D':7},
        '3': {'A':12,'B':7,'C':8,'D':5}

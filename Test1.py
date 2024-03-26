@@ -1,22 +1,49 @@
-from pulp import *
-
-#init class
-model = LpProblem('max pouvoir calorifique', LpMaximize)
+from pulp import LpProblem, LpVariable, lpSum, LpMaximize
 
 #define variables
-A=LpVariable('Gas A',lowBound=0,cat='Continuous')
-B=LpVariable('Gas B',lowBound=0,cat='Continuous')
-C=LpVariable('Gas C',lowBound=0,cat='Continuous')
+gas=['A', 'B', 'C']
+
+#define atributs
+TES={'A':6,
+     'B':2,
+     'C':4
+     }
+P={  'A':10,
+     'B':25,
+     'C':15
+     }
+PC={ 'A':1000,
+     'B':2000,
+     'C':1500
+     }
+
+#define problem
+prob = LpProblem('max pouvoir calorifique', LpMaximize)
+
+#variable de decision
+x = LpVariable.dicts('Tout les trois gas', [ i for i in gas],0)
 
 #define objective function
-model += 1000*A + 2000*B + 1500*C
+prob += lpSum(PC[i]*x[(i)] for i in gas)
 
 #define contraints
-model += 6 * A + 2 * B + 4 * C <= 10
-model += 10 * A + 25 * B + 15 * C <= 50
- 
-#solve model
-model.solve()
-print("Produce {} Gas A".format(A.varValue))
-print("Produce {} Gas B".format(B.varValue))
-print("Produce {} Gas C".format(C.varValue))
+prob += lpSum( TES[i]*x[(i)] for i in gas)<= 10
+prob += lpSum( P[i]*x[(i)] for i in gas)<= 50
+
+
+prob.solve()
+
+# Affichage des résultats
+if prob.status == 1:
+    print("Optimal solution found")
+elif prob.status == -1:
+    print("No feasible solution exists")
+elif prob.status == 0:
+    print("Solution is unbounded")
+else:
+    print("Solution status is undefined")
+
+print("Cout Totale :", round(prob.objective.value(), 2),"Dn")
+
+for i in gas:
+    print(f"Produce {x[i].value()} of Gas {i} \n")
