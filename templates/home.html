@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}Home page{% endblock %}
+{% block script %}
+   <script src="../dynamic.js"></script>
+{% endblock %}
+
+{% block content %}
+    <h1>Remplir le formulaire</h1>
+    <form action="#" method="post">
+        <div id="var">
+            <p>Ajouter une variable : </p>
+            <input type="text" name=0>
+        </div>
+        <button type="button" onclick="addvar({ o })">+</button>
+        <input type="hidden" name="compteur" value="{{o}}">
+        <div id ="att">
+            <p>Ajouter un Attribut</p>
+            <input type="text" name="0"> 
+        </div>
+        <button type="button" onclick="addatt({ p })">+</button>
+        <input type="hidden" name="compteur" value="{{p}}">
+
+    </form>
+{% endblock %} 
