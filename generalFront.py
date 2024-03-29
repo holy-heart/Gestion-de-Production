@@ -7,38 +7,50 @@ app= Flask(__name__)
 def home():
     if request.method== 'POST':
         variables=[]
-        for i in range(request.form['compteur']):
+        for i in range(request.form['compteur1']):
             var=request.form[i] 
             variables.append(var)
-
-
-        #define atributs#define variables#define variables#define variables#define variables#define variables#define variables#define variables#define variables
-
-        attributs={}
-        while t==False:
-            var=input(f"veuillez entrer le nom de l'attribut n {n} ('stop' pour arreter) : ")
-            if var == "stop":
-                t=True
-            else:
-                att={}
-                for i in variables:
-                    att[i]=float(input(f"donne la valeur de {i} pour l'attribut {var} : "))
-                attributs[var]=att
-                n+=1
-
-        #define problem#define problem  #define problem  #define problem  #define problem  #define problem  #define problem  #define problem  #define problem  #define problem      
-        titre=input("saisissez le titre : ")
-        var=input(f"veuillez choisir entre une solution de 'minimisation' ou de 'maximisation' (Maximisation par defalt) : ")
-        if var=="minimisation" :
-            prob = LpProblem(titre, LpMinimize) 
-        else:    
-            prob = LpProblem(titre, LpMaximize)
-        ######################################################################################################################
-        #variable de decision
-        x = LpVariable.dicts('variables', [ i for i in variables],0)
+            attributs={}
+        return redirect(url_for("home2", variables, attributs, att=0))    
 
     else :
         return render_template('home.html', i=0)
+
+
+
+
+#define atributs#define variables#define variables#define variables#define variables#define variables#define variables#define variables#define variables
+@app.route('/home2/<att>', methods=['POST','GET'])
+def home2(variables, attributs, att):
+    if request.method== 'POST':
+        for i in range(request.form['compteur2']):
+            var=request.form[i] 
+            attributs.append(var)
+            att={}
+            for j in len(variables):
+                att[j]=float(request.form['compteur2'])
+            attributs[var]=att
+            n+=1
+
+        #define problem#define problem  #define problem  #define problem  #define problem  #define problem  #define problem  #define problem  #define problem  #define problem      
+        var=input(f"veuillez choisir entre une solution de 'minimisation' ou de 'maximisation' (Maximisation par defalt) : ")
+        if var=="minimisation" :
+            prob = LpProblem("Probleme", LpMinimize) 
+        else:    
+            prob = LpProblem("Probleme", LpMaximize)
+        ######################################################################################################################
+        #variable de decision
+        x = LpVariable.dicts('variables', [ i for i in variables],0)
+        return redirect(url_for("choice", variables, attributs, x, prob))  
+    else :
+        return render_template('home2.html', variables, i=0)
+    
+
+
+
+
+
+
 
 
 
