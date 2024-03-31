@@ -1,49 +1,60 @@
 from pulp import LpProblem, LpVariable, lpSum, LpMaximize, LpMinimize
-from flask import Flask, redirect, url_for, render_template, request
+from flask import Flask, redirect, url_for, render_template, request, session
 
 app= Flask(__name__)
-
+app.secret_key = "jafar" 
 @app.route('/', methods=['POST','GET'])
 def home():
     if request.method== 'POST':
-        variables=[]
-        for i in range(request.form['compteur1']):
-            var=request.form[i] 
-            variables.append(var)
-            attributs={}
-        return redirect(url_for("home2", variables, attributs, att=0))    
+        variables=[] 
+        variables.append(request.form["one"])  
+        variables.append(request.form["two"]) 
+        variables.append(request.form["three"]) 
+        session['variables']=variables
+        return redirect(url_for("attribut"))    
 
     else :
-        return render_template('home.html', i=0)
+        return render_template('home.html')
 
 
 
 
 #define atributs#define variables#define variables#define variables#define variables#define variables#define variables#define variables#define variables
-@app.route('/home2/<att>', methods=['POST','GET'])
-def home2(variables, attributs, att):
+@app.route('/attribut/', methods=['POST','GET'])
+def attribut():
     if request.method== 'POST':
-        for i in range(request.form['compteur2']):
-            var=request.form[i] 
-            attributs.append(var)
-            att={}
-            for j in len(variables):
-                att[j]=float(request.form['compteur2'])
-            attributs[var]=att
-            n+=1
+        
+        table_attributs=[]
+        table_attributs.append(request.form["one"])  
+        table_attributs.append(request.form["two"]) 
+        table_attributs.append(request.form["three"])
 
-        #define problem#define problem  #define problem  #define problem  #define problem  #define problem  #define problem  #define problem  #define problem  #define problem      
-        var=input(f"veuillez choisir entre une solution de 'minimisation' ou de 'maximisation' (Maximisation par defalt) : ")
-        if var=="minimisation" :
-            prob = LpProblem("Probleme", LpMinimize) 
-        else:    
-            prob = LpProblem("Probleme", LpMaximize)
-        ######################################################################################################################
-        #variable de decision
-        x = LpVariable.dicts('variables', [ i for i in variables],0)
-        return redirect(url_for("choice", variables, attributs, x, prob))  
+        session['table_attributs']=table_attributs
+        return redirect(url_for("valeurs"))  
     else :
-        return render_template('home2.html', variables, i=0)
+        return render_template('attributs.html')        
+
+
+@app.route('/valeurs/', methods=['POST','GET'])
+def valeurs():
+    if request.method== 'POST': 
+        variables=session.get('variables')  
+        table_attributs=session.get('table_attributs')
+        attributs={}
+        for index, i in enumerate(table_attributs):
+            att={}
+            for jndex, j in enumerate(variables):
+                att[j]=float(request.form[f"var_{index}_{jndex}"])
+            attributs[i]=att
+        session['attributs']=attributs
+
+        return redirect(url_for("choice"))  
+    else :
+        variables=session.get('variables')  
+        table_attributs=session.get('table_attributs')
+        v=len(variables)
+        a=len(table_attributs)
+        return render_template('valeurs.html', variables=variables, table_attributs=table_attributs, v=v, a=a)
     
 
 
@@ -62,45 +73,67 @@ def home2(variables, attributs, att):
 
 
 @app.route('/choice', methods=['POST','GET'])
-def choice(variables, attributs, x, prob):
-    #choisir quelle attribut est en decision
-    j=input('quelle atribut voulez vous traiter (tapez le correctement) : ')
-    #define objective function
-    prob += lpSum(attributs[j][i]*x[i] for i in variables), "Objective Function"
-    #define contraints
-    print('maintenant vous devez definir les contraintes : \n')
-    t=False
-    while t==False:
-        j=input("veuillez entrer le nom de l'attribut (tapez le correctement) ('stop' pour arreter) : ")
-        
-        if j == "stop":
-            t=True
+def choice():
+    if request.method== 'POST':
+        variables=session.get('variables')  
+        attributs=session.get('attributs')
+        obj = request.form.get('objectif')
+        if obj=="Minimisation" :
+            prob = LpProblem("Probleme", LpMinimize) 
+        else:    
+            prob = LpProblem("Probleme", LpMaximize)
+        ######################################################################################################################
+        #variable de decision
+        x = LpVariable.dicts('variables', [ i for i in variables],0)
+        #choisir quelle attribut est en decision
+        j=request.form['decision']
+        #define objective function
+        prob += lpSum(attributs[j][i]*x[i] for i in variables), "Objective Function"
+        #define contraints
+        op=request.form['operation']
+        val1=float(request.form['val_1'])
+        val2=float(request.form['val_2'])
+        j=request.form['contrainte']
+        if op == '<=':
+            prob += lpSum( attributs[j][i]*x[i] for i in variables)<= val1
+            prob += lpSum( attributs["Prix"][i]*x[i] for i in variables)<= val2
+        elif op =='=':
+            prob += lpSum( attributs[j][i]*x[i] for i in variables) == val1
+            prob += lpSum( attributs['Prix'][i]*x[i] for i in variables) == val2
+        elif op == '>=' :
+            prob += lpSum( attributs[j][i]*x[i] for i in variables)>= val1
+            prob += lpSum( attributs['Prix'][i]*x[i] for i in variables)>= val2
+
+        prob.solve()
+        # Affichage des résultats
+        # Nouvelle partie pour afficher les résultats
+        if prob.status == 1:
+            print("Solution optimale trouvée")
+        elif prob.status == -1:
+            print("Aucune solution réalisable n'existe")
+        elif prob.status == 0:
+            print("La solution est non bornée")
         else:
-            op=input(f" choisissez entr | <= | = | >= | : ")
-            var=float(input(f"veuillez entrer la valuer corespondante : "))
-            if op == '<=':
-                prob += lpSum( attributs[j][i]*x[i] for i in variables)<= var
-            elif op =='=':
-                prob += lpSum( attributs[j][i]*x[i] for i in variables) == var
-            elif op == '>=' :
-                prob += lpSum( attributs[j][i]*x[i] for i in variables)>= var
+            print("Le statut de la solution est indéfini")
+
+        print("Coût Total :", round(prob.objective.value(), 2), "Dn")
+
+        for i in variables:
+            print(f"Produire {x[i].value()} de Gaz {i}")
+
+
+        return redirect(url_for('solution'))
+    else :
+        table_attributs=session.get('table_attributs')
+
+        return render_template('choice.html', table_attributs=table_attributs)
                 
 
 @app.route('/solution', methods=['POST','GET'])
-def sol(prob, variables, x):
-    prob.solve()
+def solution():
+    return f"<h1> JE SUIS LE GOAT </h1>"
+    
 
-    # Affichage des résultats
-    if prob.status == 1:
-        print("Optimal solution found")
-    elif prob.status == -1:
-        print("No feasible solution exists")
-    elif prob.status == 0:
-        print("Solution is unbounded")
-    else:
-        print("Solution status is undefined")
 
-    print("Cout Totale :", round(prob.objective.value(), 2),"Dn")
-
-    for i in variables:
-        print(f"Produce {x[i].value()} of Gas {i} \n")
+if __name__=="__main__":
+    app.run(debug=True)
