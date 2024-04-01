@@ -108,18 +108,17 @@ def choice():
         # Affichage des résultats
         # Nouvelle partie pour afficher les résultats
         if prob.status == 1:
-            print("Solution optimale trouvée")
+            statue="Solution optimale trouvée"
         elif prob.status == -1:
-            print("Aucune solution réalisable n'existe")
+            statue="Aucune solution réalisable n'existe"
         elif prob.status == 0:
-            print("La solution est non bornée")
+            statue="La solution est non bornée"
         else:
-            print("Le statut de la solution est indéfini")
-
-        print("Coût Total :", round(prob.objective.value(), 2), "Dn")
-
+            statue="Le statut de la solution est indéfini"
+        session["statue"]=statue
+        session['cout']="Coût Total :", round(prob.objective.value(), 2), "Dn"
         for i in variables:
-            print(f"Produire {x[i].value()} de Gaz {i}")
+            session[f"var {i}"]=f"La variable '{i} : {x[i].value()} "
 
 
         return redirect(url_for('solution'))
@@ -131,7 +130,13 @@ def choice():
 
 @app.route('/solution', methods=['POST','GET'])
 def solution():
-    return f"<h1> JE SUIS LE GOAT </h1>"
+    statue=session.get('statue')
+    cout=session.get('cout')
+    variables=session.get('variables') 
+    result=[]
+    for i in variables:
+        result.append(session.get(f"var {i}"))
+    return render_template('sol.html',result=result,statue=statue,cout=cout)
     
 
 
