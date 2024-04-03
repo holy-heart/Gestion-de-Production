@@ -92,27 +92,20 @@ def choice():
         #define objective function
         prob += lpSum(attributs[j][i]*x[i] for i in variables), "Objective Function"
         #define contraints
-        op1=request.form['operation_1']
-        op2=request.form['operation_2']
-        val1=float(request.form['val_1'])
-        val2=float(request.form['val_2'])
-        j=request.form['contrainte_1']
-        if op1 == '<=':
-            prob += lpSum( attributs[j][i]*x[i] for i in variables)<= val1
+        for att in attributs.keys() :
+            op=request.form[f'operation_{att}']
+            if op != 'nothing' and request.form[f'val_{att}']!='' :
+                val=float(request.form[f'val_{att}'])
+                if op == '<=':
+                    prob += lpSum( attributs[att][i]*x[i] for i in variables)<= val
+                    
+                elif op=='=':
+                    prob += lpSum( attributs[att][i]*x[i] for i in variables) == val
+                    
+                elif op== '>=' :
+                    prob += lpSum( attributs[att][i]*x[i] for i in variables)>= val
+
             
-        elif op1 =='=':
-            prob += lpSum( attributs[j][i]*x[i] for i in variables) == val1
-            
-        elif op1 == '>=' :
-            prob += lpSum( attributs[j][i]*x[i] for i in variables)>= val1
-            
-        z=request.form['contrainte_2']
-        if op2 == '<=':
-            prob += lpSum( attributs[z][i]*x[i] for i in variables)<= val2
-        elif op2 =='=':
-            prob += lpSum( attributs[z][i]*x[i] for i in variables) == val2
-        elif op2 == '>=' :
-            prob += lpSum( attributs[z][i]*x[i] for i in variables)>= val2
 
         prob.solve()
         # Affichage des résultats
@@ -134,8 +127,8 @@ def choice():
         return redirect(url_for('solution'))
     else :
         table_attributs=session.get('table_attributs')
-
-        return render_template('choice.html', table_attributs=table_attributs)
+        a=len(table_attributs)
+        return render_template('choice.html', table_attributs=table_attributs, a=a)
                 
 
 @app.route('/solution', methods=['POST','GET'])
