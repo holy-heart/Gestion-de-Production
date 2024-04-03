@@ -1,10 +1,33 @@
+<!DOCTYPE html>
 <html>
-    <head>
-        <title>{% block title %}{% endblock %}</title>
-        {% block script %}{% endblock %}
-    </head>
-    <body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %}</title>
+    <script src="jquery-3.6.0.min.js"></script>
+    <style>
+        /* Style pour centrer le contenu */
+        body, html {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #1c1723; 
+        }
+        .container {
+            max-width: 800px; /* Largeur maximale du cadre */
+            padding: 20px;
+            border: 1px solid #000000; /* Bordure */
+            border-radius: 5px; /* Coins arrondis */
+            background-color: #adafbd; /* Couleur de fond */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
         {% block content %}
         {% endblock %}
-    </body>
+    </div>
+</body>
 </html>

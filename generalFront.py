@@ -7,9 +7,10 @@ app.secret_key = "jafar"
 def home():
     if request.method== 'POST':
         variables=[] 
-        variables.append(request.form["one"])  
-        variables.append(request.form["two"]) 
-        variables.append(request.form["three"]) 
+        i=0
+        while f"var-{i}" in request.form:
+            variables.append(request.form[f"var-{i}"])
+            i += 1
         session['variables']=variables
         return redirect(url_for("attribut"))    
 
@@ -25,9 +26,10 @@ def attribut():
     if request.method== 'POST':
         
         table_attributs=[]
-        table_attributs.append(request.form["one"])  
-        table_attributs.append(request.form["two"]) 
-        table_attributs.append(request.form["three"])
+        i=0
+        while f"att-{i}" in request.form:
+            table_attributs.append(request.form[f"att-{i}"])
+            i += 1
 
         session['table_attributs']=table_attributs
         return redirect(url_for("valeurs"))  
@@ -90,19 +92,27 @@ def choice():
         #define objective function
         prob += lpSum(attributs[j][i]*x[i] for i in variables), "Objective Function"
         #define contraints
-        op=request.form['operation']
+        op1=request.form['operation_1']
+        op2=request.form['operation_2']
         val1=float(request.form['val_1'])
         val2=float(request.form['val_2'])
-        j=request.form['contrainte']
-        if op == '<=':
+        j=request.form['contrainte_1']
+        if op1 == '<=':
             prob += lpSum( attributs[j][i]*x[i] for i in variables)<= val1
-            prob += lpSum( attributs["Prix"][i]*x[i] for i in variables)<= val2
-        elif op =='=':
+            
+        elif op1 =='=':
             prob += lpSum( attributs[j][i]*x[i] for i in variables) == val1
-            prob += lpSum( attributs['Prix'][i]*x[i] for i in variables) == val2
-        elif op == '>=' :
+            
+        elif op1 == '>=' :
             prob += lpSum( attributs[j][i]*x[i] for i in variables)>= val1
-            prob += lpSum( attributs['Prix'][i]*x[i] for i in variables)>= val2
+            
+        z=request.form['contrainte_2']
+        if op2 == '<=':
+            prob += lpSum( attributs[z][i]*x[i] for i in variables)<= val2
+        elif op2 =='=':
+            prob += lpSum( attributs[z][i]*x[i] for i in variables) == val2
+        elif op2 == '>=' :
+            prob += lpSum( attributs[z][i]*x[i] for i in variables)>= val2
 
         prob.solve()
         # Affichage des résultats

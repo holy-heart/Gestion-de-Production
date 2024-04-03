@@ -4,13 +4,28 @@
 {% block content %}
     <h1>Remplir le formulaire</h1>
     <form action="#" method="post">
-        <p>Ajouter une attribut : </p>
-        <input type="text" name='one'>
-        <p>Ajouter une attribut : </p>
-        <input type="text" name='two'>
-        <p>Ajouter une attribut : </p>
-        <input type="text" name='three'>
+        <p>Ajouter des attributs : </p>
+        <div id="attributs">
+            <input type="text" name='att-0'>
+            <br>
+        </div>
+        <button type="button" id="addField">Add attribut</button><br><br>
+        <br>
+
         <input type="submit" value="submit"/>  
     </form>
-    
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var counter = 1;
+            document.getElementById('addField').addEventListener('click', function() {
+                var input = document.createElement('input');
+                input.type = 'text';
+                input.name = 'att-' + counter;
+                input.required = true;
+                document.getElementById('attributs').appendChild(input);
+                document.getElementById('attributs').appendChild(document.createElement('br'));
+                counter++;
+            });
+        });
+    </script>
 {% endblock %} 

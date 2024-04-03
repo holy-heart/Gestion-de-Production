@@ -4,29 +4,51 @@
 
 {% block content %}
     <form action="#" method='post'>
-        <select name="objectif">
-            <option value="Minimisation">Minimisation</option>
-            <option value="Maximisation">Maximisation</option>
-        </select>
-        <select name="decision">
-            {% for i in table_attributs %}
-                <option value="{{i}}">{{i}}</option>
-            {% endfor %}
-        </select><br>
-        <select name="operation">
-            <option value="&lt;=">&lt;=</option>
-            <option value="&gt;=">&gt;=</option>
-            <option value="=">=</option>
-        </select>
-        <select name="contrainte">
-            {% for i in table_attributs %}
-                <option value="{{i}}">{{i}}</option>
-            {% endfor %}
-        </select>
-        <p>entré une valeur de condition</p>
-        <input type="text" name="val_1"/>
-        <p>entré une valeur de condition</p>
-        <input type="text" name="val_2"/>
+        <div>
+            <p>Choisissez l'attribut de decision et le type de probleme</p>
+            <select name="objectif">
+                <option value="Minimisation">Minimisation</option>
+                <option value="Maximisation">Maximisation</option>
+            </select>
+            <select name="decision">
+                {% for i in table_attributs %}
+                    <option value="{{i}}">{{i}}</option>
+                {% endfor %}
+            </select><br>
+        </div>
+
+        <div>
+            <p>entré une valeur de condition</p>
+            <input type="text" name="val_1"/>
+            <select name="contrainte_1">
+                {% for i in table_attributs %}
+                    <option value="{{i}}">{{i}}</option>
+                {% endfor %}
+            </select>
+            <select name="operation_1">
+                <option value="&lt;=">&lt;=</option>
+                <option value="&gt;=">&gt;=</option>
+                <option value="=">=</option>
+            </select>
+        </div>
+
+        <div>
+            <p>entré une valeur de condition</p>
+            <input type="text" name="val_2"/>
+            <select name="contrainte_2">
+                {% for i in table_attributs %}
+                    <option value="{{i}}">{{i}}</option>
+                {% endfor %}
+            </select>
+            <select name="operation_2">
+                <option value="&lt;=">&lt;=</option>
+                <option value="&gt;=">&gt;=</option>
+                <option value="=">=</option>
+            </select>
+            <br><br><br>
+        </div>
+
+
         <input type="submit" value="submit"/>  
     </form>
 {% endblock %} 

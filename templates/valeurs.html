@@ -7,10 +7,11 @@
         <table border="1">
             {% for i in range(a) %}
                 <tr>
+                    <td>
+                        <p>{{table_attributs[i]}}</p>
+                    </td>
                     {% for j in range(v) %}
-                        <td>
-                            <p>{{table_attributs[i]}}</p>
-                        </td>
+                        
                         <td>
                             <p>Ajouter une attribut : </p>
                             <input type="text" name='var_{{i}}_{{j}}'>

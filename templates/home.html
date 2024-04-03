@@ -1,22 +1,30 @@
 {% extends 'base.html' %}
 {% block title %}Home page{% endblock %}
-
+{% block BIG %}Home page{% endblock %}
 {% block content %}
     <h1>Remplir le formulaire</h1>
     <form action="#" method="post">
-        <div id="var1">
-            <p>Ajouter une variable : </p>
-            <input type="text" name='one'>
+        <p>Ajouter des variables : </p>
+        <div id="variables">
+            <input type="text" name='var-0' required>
+            <br>
         </div>
-        <div id="var2">
-            <p>Ajouter une variable : </p>
-            <input type="text" name='two'>
-        </div>
-        <div id="var3">
-            <p>Ajouter une variable : </p>
-            <input type="text" name='three'>
-        </div>  
+        <button type="button" id="addField">Add variable</button><br><br>
+        <br>
         <input type="submit" value="submit"/>  
     </form>
-    
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var counter = 1;
+            document.getElementById('addField').addEventListener('click', function() {
+                var input = document.createElement('input');
+                input.type = 'text';
+                input.name = 'var-' + counter;
+                input.required = true;
+                document.getElementById('variables').appendChild(input);
+                document.getElementById('variables').appendChild(document.createElement('br'));
+                counter++;
+            });
+        });
+    </script>
 {% endblock %} 
